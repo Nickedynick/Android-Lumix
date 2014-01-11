@@ -1,21 +1,22 @@
 package com.nickedynick.lumix;
 
-import android.app.Activity;
-;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.os.Build;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity
@@ -73,9 +74,11 @@ public class MainActivity extends Activity
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        if (actionBar != null) {
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
+        }
     }
 
 
@@ -98,10 +101,7 @@ public class MainActivity extends Activity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     /**
@@ -133,8 +133,21 @@ public class MainActivity extends Activity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            if (rootView != null)
+            {
+                TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+                textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+
+                // Set up button.
+                Button bConnect = (Button)rootView.findViewById(R.id.buttonConnect);
+                bConnect.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        connectToWifi(view);
+                    }
+                });
+            }
             return rootView;
         }
 
@@ -143,6 +156,64 @@ public class MainActivity extends Activity
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+
+        public void connectToWifi(View view)
+        {
+            //http://developer.android.com/reference/android/net/wifi/WifiManager.html
+
+            Log.v("Lumix", "Connecting...");
+            WifiManager wifiManager = (WifiManager)view.getContext().getSystemService(Context.WIFI_SERVICE);
+
+            Log.v("Lumix", "Last Scan Results:");
+            for (ScanResult sr : wifiManager.getScanResults())
+            {
+                Log.v("Lumix", "SSID: " + sr.SSID + "\r\n   Capabilities" + sr.capabilities);
+
+                if (sr.SSID.equals(getString(R.string.wifiSSID)))
+                {
+                    Log.v("Lumix", "Network found: " + sr.SSID);
+                }
+            }
+
+
+            Log.v("Lumix", "Configured APs:");
+            WifiConfiguration wc;
+            int netId = 0;
+
+            Boolean bWifiConfigured = false;
+
+            for (WifiConfiguration wcPre : wifiManager.getConfiguredNetworks())
+            {
+                Log.v("Lumix", wcPre.SSID + " >> " + getString(R.string.wifiSSID));
+
+                if (wcPre.SSID.equals(getString(R.string.wifiSSID)))
+                {
+                    bWifiConfigured = true;
+                    netId = wcPre.networkId;
+                }
+            }
+
+            if (!bWifiConfigured)
+            {
+                // setup a wifi configuration
+                wc = new WifiConfiguration();
+                wc.SSID = getString(R.string.wifiSSID);
+                wc.preSharedKey = getString(R.string.wifiPSK);
+                wc.status = WifiConfiguration.Status.ENABLED;
+                wc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+                wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+                wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+                wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+                wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+                wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+                wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+                // connect to and enable the connection
+                netId = wifiManager.addNetwork(wc);
+            }
+
+            wifiManager.enableNetwork(netId, true);
+            wifiManager.setWifiEnabled(true);
         }
     }
 
