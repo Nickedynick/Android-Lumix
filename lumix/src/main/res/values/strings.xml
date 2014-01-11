@@ -10,6 +10,6 @@
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
     <string name="wifiPSK">\"a1c994c0ce4d4\"</string>
-    <string name="wifiSSID">\"TZ40_NICK\"</string>
+    <string name="wifiSSID">\"TZ40-NICK\"</string>
 
 </resources>

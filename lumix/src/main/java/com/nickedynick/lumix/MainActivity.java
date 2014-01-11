@@ -164,6 +164,7 @@ public class MainActivity extends Activity
 
             Log.v("Lumix", "Connecting...");
             WifiManager wifiManager = (WifiManager)view.getContext().getSystemService(Context.WIFI_SERVICE);
+            Boolean scanned = wifiManager.startScan();
 
             Log.v("Lumix", "Last Scan Results:");
             for (ScanResult sr : wifiManager.getScanResults())
@@ -201,19 +202,21 @@ public class MainActivity extends Activity
                 wc.SSID = getString(R.string.wifiSSID);
                 wc.preSharedKey = getString(R.string.wifiPSK);
                 wc.status = WifiConfiguration.Status.ENABLED;
-                wc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-                wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-                wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-                wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-                wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-                wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-                wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+                //wc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+                //wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+                //wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+                //wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+                //wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+                //wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+                //wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
                 // connect to and enable the connection
                 netId = wifiManager.addNetwork(wc);
             }
 
+            wifiManager.disconnect();
             wifiManager.enableNetwork(netId, true);
             wifiManager.setWifiEnabled(true);
+            //wifiManager.reconnect();
         }
     }
 
