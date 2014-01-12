@@ -265,7 +265,7 @@ public class MainActivity extends Activity
             bConnect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    connectToCamera(view);
+                    connectToCamera(view.getRootView());
                 }
             });
 
@@ -274,7 +274,7 @@ public class MainActivity extends Activity
             bDisconnect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    reconnectToWifi(view);
+                    reconnectToWifi(view.getRootView());
                 }
             });
 
@@ -287,7 +287,7 @@ public class MainActivity extends Activity
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
-        // ToDo: View being passed here is the button, not the root view.
+
         public void connectToCamera(View view)
         {
             Log.v("Lumix", "Connecting...");
@@ -305,7 +305,8 @@ public class MainActivity extends Activity
 
             SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString(getString(R.string.sharedPrefLastSSID), currentSSID);
+
+            if (!currentSSID.equals(cameraSSID)) editor.putString(getString(R.string.sharedPrefLastSSID), currentSSID);
 
             editor.putString(getString(R.string.sharedPrefCameraSSID), cameraSSID);
             editor.putString(getString(R.string.sharedPrefCameraPSK), cameraPSK);
