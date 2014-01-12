@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -17,9 +19,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ShareActionProvider;
-import android.widget.TextView;
 
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -39,7 +41,7 @@ public class MainActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gallery);
+        setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -53,18 +55,19 @@ public class MainActivity extends Activity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        Fragment fragment = GalleryFragment.newInstance(position + 1);
+        Fragment fragment;
 
         switch (position)
         {
             case 0:
+            default:
                 fragment = GalleryFragment.newInstance(position + 1);
                 break;
             case 1:
                 fragment = LiveFragment.newInstance(position + 1);
                 break;
             case 2:
-                fragment = GalleryFragment.newInstance(position + 1);
+                fragment = ConnectionFragment.newInstance(position + 1);
                 break;
         }
 
@@ -84,7 +87,7 @@ public class MainActivity extends Activity
                 mTitle = getString(R.string.section_Live);
                 break;
             case 3:
-                mTitle = getString(R.string.section_Settings);
+                mTitle = getString(R.string.section_Connection);
                 break;
         }
     }
@@ -161,18 +164,6 @@ public class MainActivity extends Activity
 
             if (rootView != null)
             {
-                TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-                textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
-
-                // Set up button.
-                Button bConnect = (Button)rootView.findViewById(R.id.buttonConnect);
-                bConnect.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        connectToWifi(view);
-                    }
-                });
-
                 GridView gridview = (GridView) rootView.findViewById(R.id.gridView);
                 gridview.setAdapter(new ImageAdapter(rootView.getContext()));
             }
@@ -185,68 +176,7 @@ public class MainActivity extends Activity
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
-
-        public void connectToWifi(View view)
-        {
-            //http://developer.android.com/reference/android/net/wifi/WifiManager.html
-
-            Log.v("Lumix", "Connecting...");
-            WifiManager wifiManager = (WifiManager)view.getContext().getSystemService(Context.WIFI_SERVICE);
-            Boolean scanned = wifiManager.startScan();
-
-            Log.v("Lumix", "Last Scan Results:");
-            for (ScanResult sr : wifiManager.getScanResults())
-            {
-                Log.v("Lumix", "SSID: " + sr.SSID + "\r\n   Capabilities" + sr.capabilities);
-
-                if (sr.SSID.equals(getString(R.string.wifiSSID)))
-                {
-                    Log.v("Lumix", "Network found: " + sr.SSID);
-                }
-            }
-
-
-            Log.v("Lumix", "Configured APs:");
-            WifiConfiguration wc;
-            int netId = 0;
-
-            Boolean bWifiConfigured = false;
-
-            for (WifiConfiguration wcPre : wifiManager.getConfiguredNetworks())
-            {
-                Log.v("Lumix", wcPre.SSID + " >> " + getString(R.string.wifiSSID));
-
-                if (wcPre.SSID.equals(getString(R.string.wifiSSID)))
-                {
-                    bWifiConfigured = true;
-                    netId = wcPre.networkId;
-                }
-            }
-
-            if (!bWifiConfigured)
-            {
-                wc = new WifiConfiguration();
-                wc.SSID = getString(R.string.wifiSSID);
-                wc.preSharedKey = getString(R.string.wifiPSK);
-                wc.status = WifiConfiguration.Status.ENABLED;
-                //wc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-                //wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-                //wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-                //wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-                //wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-                //wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-                //wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-
-                netId = wifiManager.addNetwork(wc);
-            }
-
-            wifiManager.disconnect();
-            wifiManager.enableNetwork(netId, true);
-            wifiManager.setWifiEnabled(true);
-            //wifiManager.reconnect();
-        }
     }
-
 
     /**
      * A placeholder fragment containing a simple view.
@@ -277,8 +207,7 @@ public class MainActivity extends Activity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_live, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+
             return rootView;
         }
 
@@ -287,6 +216,168 @@ public class MainActivity extends Activity
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class ConnectionFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static ConnectionFragment newInstance(int sectionNumber) {
+            ConnectionFragment fragment = new ConnectionFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        public ConnectionFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_connection, container, false);
+
+            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+            String cameraSSID = sharedPref.getString(getString(R.string.sharedPrefCameraSSID), "\"" + getString(R.string.cameraSSID) + "\"");
+            String cameraPSK = sharedPref.getString(getString(R.string.sharedPrefCameraPSK), "\"" + getString(R.string.cameraPSK) + "\"");
+
+            EditText editTextSSID = (EditText) rootView.findViewById(R.id.editTextSSID);
+            editTextSSID.setText(cameraSSID);
+
+            EditText editTextPassword = (EditText) rootView.findViewById(R.id.editTextPSK);
+            editTextPassword.setText(cameraPSK);
+
+            // Set up button.
+            Button bConnect = (Button)rootView.findViewById(R.id.buttonConnect);
+            bConnect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    connectToCamera(view);
+                }
+            });
+
+            // Set up button.
+            Button bDisconnect = (Button)rootView.findViewById(R.id.buttonDisconnect);
+            bDisconnect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    reconnectToWifi(view);
+                }
+            });
+
+            return rootView;
+        }
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            ((MainActivity) activity).onSectionAttached(
+                    getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+        // ToDo: View being passed here is the button, not the root view.
+        public void connectToCamera(View view)
+        {
+            Log.v("Lumix", "Connecting...");
+            WifiManager wifiManager = (WifiManager)view.getContext().getSystemService(Context.WIFI_SERVICE);
+
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+
+            String currentSSID = wifiInfo.getSSID();
+
+            EditText editTextSSID = (EditText) view.findViewById(R.id.editTextSSID);
+            EditText editTextPSK = (EditText) view.findViewById(R.id.editTextPSK);
+
+            String cameraSSID = editTextSSID.getText().toString();
+            String cameraPSK = editTextPSK.getText().toString();
+
+            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.sharedPrefLastSSID), currentSSID);
+
+            editor.putString(getString(R.string.sharedPrefCameraSSID), cameraSSID);
+            editor.putString(getString(R.string.sharedPrefCameraPSK), cameraPSK);
+
+            editor.commit();
+
+            Boolean scanned = wifiManager.startScan();
+
+            Log.v("Lumix", "Last Scan Results:");
+            for (ScanResult sr : wifiManager.getScanResults())
+            {
+                Log.v("Lumix", "SSID: " + sr.SSID + "\r\n   Capabilities" + sr.capabilities);
+
+                if (sr.SSID.equals(cameraSSID))
+                {
+                    Log.v("Lumix", "Network found: " + sr.SSID);
+                }
+            }
+
+            Log.v("Lumix", "Configured APs:");
+            WifiConfiguration wc;
+            int netId = 0;
+
+            Boolean bWifiConfigured = false;
+
+            for (WifiConfiguration wcPre : wifiManager.getConfiguredNetworks())
+            {
+                Log.v("Lumix", wcPre.SSID + " >> " + cameraSSID);
+
+                if (wcPre.SSID.equals(cameraSSID))
+                {
+                    bWifiConfigured = true;
+                    netId = wcPre.networkId;
+                }
+            }
+
+            if (!bWifiConfigured)
+            {
+                wc = new WifiConfiguration();
+                wc.SSID = cameraSSID;
+                wc.preSharedKey = cameraPSK;
+                wc.status = WifiConfiguration.Status.ENABLED;
+
+                netId = wifiManager.addNetwork(wc);
+            }
+
+            wifiManager.disconnect();
+            wifiManager.enableNetwork(netId, true);
+            wifiManager.setWifiEnabled(true);
+        }
+
+        public void reconnectToWifi(View view)
+        {
+            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+            String lastSSID = sharedPref.getString(getString(R.string.sharedPrefLastSSID), "");
+
+            if (!lastSSID.equals(""))
+            {
+                WifiManager wifiManager = (WifiManager)view.getContext().getSystemService(Context.WIFI_SERVICE);
+
+                for (WifiConfiguration wcPre : wifiManager.getConfiguredNetworks())
+                {
+                    if (wcPre.SSID.equals(lastSSID))
+                    {
+                        int netId = wcPre.networkId;
+                        wifiManager.disconnect();
+                        wifiManager.enableNetwork(netId, true);
+                        wifiManager.setWifiEnabled(true);
+                    }
+                }
+            }
         }
     }
 }

@@ -4,13 +4,18 @@
     <string name="app_name">Lumix</string>
     <string name="section_Gallery">Gallery</string>
     <string name="section_Live">Live</string>
-    <string name="section_Settings">Settings</string>
+    <string name="section_Connection">Connection</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
-    <string name="wifiPSK">\"a1c994c0ce4d4\"</string>
-    <string name="wifiSSID">\"TZ40-NICK\"</string>
+    <string name="cameraPSK">a1c994c0ce4d4</string>
+    <string name="cameraSSID">TZ40-NICK</string>
     <string name="title_activity_live">Live</string>
+    <string name="sharedPrefLastSSID">sharedPrefLastSSID</string>
+    <string name="label_SSID">SSID</string>
+    <string name="label_Password">Password</string>
+    <string name="sharedPrefCameraSSID">sharedPrefCameraSSID</string>
+    <string name="sharedPrefCameraPSK">sharedPrefCameraPSK</string>
 
 </resources>
