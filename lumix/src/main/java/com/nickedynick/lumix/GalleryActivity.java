@@ -17,9 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
-public class MainActivity extends Activity
+public class GalleryActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     // This is a comment!
@@ -37,7 +38,7 @@ public class MainActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_gallery);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -51,23 +52,38 @@ public class MainActivity extends Activity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        Fragment fragment = GalleryFragment.newInstance(position + 1);
+
+        switch (position)
+        {
+            case 0:
+                fragment = GalleryActivity.GalleryFragment.newInstance(position + 1);
+                break;
+            case 1:
+                fragment = LiveActivity.LiveFragment.newInstance(position + 1);
+                break;
+            case 2:
+                fragment = GalleryActivity.GalleryFragment.newInstance(position + 1);
+                break;
+        }
+
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment)
                 .commit();
     }
 
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.section_Gallery);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.section_Live);
                 break;
             case 3:
-                mTitle = getString(R.string.title_section3);
+                mTitle = getString(R.string.section_Settings);
                 break;
         }
     }
@@ -81,6 +97,7 @@ public class MainActivity extends Activity
         }
     }
 
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -90,6 +107,13 @@ public class MainActivity extends Activity
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
             restoreActionBar();
+
+            // Locate MenuItem with ShareActionProvider
+            MenuItem item = menu.findItem(R.id.menu_item_share);
+
+            // Fetch and store ShareActionProvider
+            mShareActionProvider = (ShareActionProvider) item.getActionProvider();
+
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -107,7 +131,7 @@ public class MainActivity extends Activity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class GalleryFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -118,21 +142,21 @@ public class MainActivity extends Activity
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static GalleryFragment newInstance(int sectionNumber) {
+            GalleryFragment fragment = new GalleryFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public PlaceholderFragment() {
+        public GalleryFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
 
             if (rootView != null)
             {
@@ -154,7 +178,7 @@ public class MainActivity extends Activity
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
+            ((GalleryActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
 
@@ -197,7 +221,6 @@ public class MainActivity extends Activity
 
             if (!bWifiConfigured)
             {
-                // setup a wifi configuration
                 wc = new WifiConfiguration();
                 wc.SSID = getString(R.string.wifiSSID);
                 wc.preSharedKey = getString(R.string.wifiPSK);
@@ -209,7 +232,7 @@ public class MainActivity extends Activity
                 //wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
                 //wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
                 //wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-                // connect to and enable the connection
+
                 netId = wifiManager.addNetwork(wc);
             }
 

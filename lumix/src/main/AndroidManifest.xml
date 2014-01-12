@@ -3,14 +3,14 @@
     package="com.nickedynick.lumix" >
 
     <uses-permission
-        android:required="true"
-        android:name="android.permission.ACCESS_WIFI_STATE"/>
+        android:name="android.permission.ACCESS_WIFI_STATE"
+        android:required="true" />
     <uses-permission
-        android:required="true"
-        android:name="android.permission.CHANGE_WIFI_STATE"/>
+        android:name="android.permission.CHANGE_WIFI_STATE"
+        android:required="true" />
     <uses-permission
-        android:required="true"
-        android:name="android.permission.INTERNET"/>
+        android:name="android.permission.INTERNET"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -18,13 +18,23 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.nickedynick.lumix.MainActivity"
+            android:name=".GalleryActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!--ToDo: Consume URL for intents.-->
+                <data android:scheme="http" android:host="panasonic.jp" android:pathPrefix="/pss/avc/lumix/" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.nickedynick.lumix.LiveActivity"
+            android:label="@string/title_activity_live" >
         </activity>
     </application>
 
