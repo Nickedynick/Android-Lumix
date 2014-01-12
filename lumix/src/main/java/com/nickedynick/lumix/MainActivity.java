@@ -20,7 +20,7 @@ import android.widget.Button;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
-public class GalleryActivity extends Activity
+public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     // This is a comment!
@@ -57,13 +57,13 @@ public class GalleryActivity extends Activity
         switch (position)
         {
             case 0:
-                fragment = GalleryActivity.GalleryFragment.newInstance(position + 1);
+                fragment = GalleryFragment.newInstance(position + 1);
                 break;
             case 1:
-                fragment = LiveActivity.LiveFragment.newInstance(position + 1);
+                fragment = LiveFragment.newInstance(position + 1);
                 break;
             case 2:
-                fragment = GalleryActivity.GalleryFragment.newInstance(position + 1);
+                fragment = GalleryFragment.newInstance(position + 1);
                 break;
         }
 
@@ -178,7 +178,7 @@ public class GalleryActivity extends Activity
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((GalleryActivity) activity).onSectionAttached(
+            ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
 
@@ -243,4 +243,47 @@ public class GalleryActivity extends Activity
         }
     }
 
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class LiveFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static LiveFragment newInstance(int sectionNumber) {
+            LiveFragment fragment = new LiveFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        public LiveFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_live, container, false);
+            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+            return rootView;
+        }
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            ((MainActivity) activity).onSectionAttached(
+                    getArguments().getInt(ARG_SECTION_NUMBER));
+            // ToDo: java.lang.ClassCastException: com.nickedynick.lumix.MainActivity cannot be cast to com.nickedynick.lumix.LiveActivity at com.nickedynick.lumix.LiveActivity$LiveFragment.onAttach(LiveActivity.java:153)
+        }
+    }
 }
