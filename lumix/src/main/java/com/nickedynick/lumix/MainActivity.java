@@ -23,6 +23,17 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ShareActionProvider;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URL;
+
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -207,6 +218,33 @@ public class MainActivity extends Activity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_live, container, false);
+
+            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+            String ipAddress = sharedPref.getString(getString(R.string.sharedPrefCameraIP), getString(R.string.cameraIP));
+            String args = "";
+            String url = "http://" + ipAddress + "/cam.cgi" + args;
+
+            //ToDo: Refactor HttpClient as AsyncTask, add UDP server (DatagramSocket).
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpResponse response = null;
+            try {
+                response = httpclient.execute(new HttpGet(url));
+                StatusLine statusLine = response.getStatusLine();
+                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    response.getEntity().writeTo(out);
+                    out.close();
+                    String responseString = out.toString();
+                    Log.v("Lumix", responseString);
+                } else{
+                    //Closes the connection.
+                    response.getEntity().getContent().close();
+                    throw new IOException(statusLine.getReasonPhrase());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             return rootView;
         }
