@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
@@ -171,6 +172,9 @@ public class MainActivity extends Activity
                         connectToWifi(view);
                     }
                 });
+
+                GridView gridview = (GridView) rootView.findViewById(R.id.gridView);
+                gridview.setAdapter(new ImageAdapter(rootView.getContext()));
             }
             return rootView;
         }
@@ -283,7 +287,6 @@ public class MainActivity extends Activity
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
-            // ToDo: java.lang.ClassCastException: com.nickedynick.lumix.MainActivity cannot be cast to com.nickedynick.lumix.LiveActivity at com.nickedynick.lumix.LiveActivity$LiveFragment.onAttach(LiveActivity.java:153)
         }
     }
 }
