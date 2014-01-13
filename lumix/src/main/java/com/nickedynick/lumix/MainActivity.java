@@ -178,6 +178,9 @@ public class MainActivity extends Activity
                 GridView gridview = (GridView) rootView.findViewById(R.id.gridView);
                 gridview.setAdapter(new ImageAdapter(rootView.getContext()));
             }
+
+            //ToDo: Get images from the camera.
+
             return rootView;
         }
 
@@ -224,7 +227,7 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(View view) {
                     CameraConnection cc = new CameraConnection(getActivity());
-                    cc.execute(CameraConnection.Command.StartServer);
+                    cc.execute(CameraConnection.Command.Viewer, CameraConnection.Command.StartServer);
                 }
             });
 
@@ -233,7 +236,7 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(View view) {
                     CameraConnection cc = new CameraConnection(getActivity());
-                    cc.execute(CameraConnection.Command.StopServer);
+                    cc.execute(CameraConnection.Command.Capture);
                 }
             });
 

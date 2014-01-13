@@ -33,7 +33,23 @@ public class CameraConnection extends AsyncTask<CameraConnection.Command, Intege
     public enum Command
     {
         StartServer,
-        StopServer
+        StopServer,
+        Viewer,
+        Query,
+        Capabilities,
+        Playback,
+        Record,
+        Capture,
+        CaptureCancel,
+        FocusWideFast,
+        FocusWideNormal,
+        FocusTeleNormal,
+        FocusTeleFast,
+        ZoomWideFast,
+        ZoomWideNormal,
+        ZoomTeleNormal,
+        ZoomTeleFast,
+        ZoomStop
     }
 
     public CameraConnection(Activity activity)
@@ -47,39 +63,46 @@ public class CameraConnection extends AsyncTask<CameraConnection.Command, Intege
 
     private String arguments(Command command)
     {
-        /*
-        Start UDP server: http://192.168.54.1/cam.cgi?mode=startstream&value=49199
-        Stop server: http://192.168.54.1/cam.cgi?mode=stopstream
-        Viewer: http://192.168.54.1/cam.cgi?mode=camcmd&value=recmode
-        Query: http://192.168.54.1/cam.cgi?mode=getstate
-        Playback: http://192.168.54.1/cam.cgi?mode=camcmd&value=playmode
-        Record: http://192.168.54.1/cam.cgi?mode=camcmd&value=video_recstart
-
-        Focus
-        Wide fast: http://192.168.54.1/cam.cgi?mode=camctrl&type=focus&value=wide-fast
-        Wide normal: http://192.168.54.1/cam.cgi?mode=camctrl&type=focus&value=wide-normal
-        Tele normal: http://192.168.54.1/cam.cgi?mode=camctrl&type=focus&value=tele-normal
-        Tele fast: http://192.168.54.1/cam.cgi?mode=camctrl&type=focus&value=tele-fast
-
-        Zoom:
-        Wide fast: http://192.168.54.1/cam.cgi?mode=camcmd&value=wide-fast
-        Wide normal: http://192.168.54.1/cam.cgi?mode=camcmd&value=wide-normal
-        Tele normal: http://192.168.54.1/cam.cgi?mode=camcmd&value=tele-normal
-        Tele fast: http://192.168.54.1/cam.cgi?mode=camcmd&value=tele-fast
-        Stop: http://192.168.54.1/cam.cgi?mode=camcmd&value=zoomstop
-
-        Capture: http://192.168.54.1/cam.cgi?mode=camcmd&value=capture
-        Capture cancel: http://192.168.54.1/cam.cgi?mode=camcmd&value=capture_cancel
-
-        Capabilities: http://192.168.54.1/cam.cgi?mode=getinfo&type=curmenu
-         */
-
         switch (command)
         {
+            //ToDo: Develop code for UDP server (DatagramSocket) to get live feed.
+            //ToDo: MJPEG. What is it, and how do I show a stream of it?
             case StartServer:
                 return "?mode=startstream&value=" + this.port;
             case StopServer:
                 return "?mode=stopstream";
+            case Viewer:
+                return "?mode=camcmd&value=recmode";
+            case Query:
+                return "?mode=getstate";
+            case Capabilities:
+                return "?mode=getinfo&type=curmenu";
+            case Playback:
+                return "?mode=camcmd&value=playmode";
+            case Record:
+                return "?mode=camcmd&value=video_recstart";
+            case Capture:
+                return "?mode=camcmd&value=capture";
+            case CaptureCancel:
+                return "?mode=camcmd&value=capture_cancel";
+            case FocusWideFast:
+                return "?mode=camctrl&type=focus&value=wide-fast";
+            case FocusWideNormal:
+                return "?mode=camctrl&type=focus&value=wide-normal";
+            case FocusTeleFast:
+                return "?mode=camctrl&type=focus&value=tele-normal";
+            case FocusTeleNormal:
+                return "?mode=camctrl&type=focus&value=tele-fast";
+            case ZoomWideFast:
+                return "?mode=camcmd&value=wide-fast";
+            case ZoomWideNormal:
+                return "?mode=camcmd&value=wide-normal";
+            case ZoomTeleFast:
+                return "?mode=camcmd&value=tele-normal";
+            case ZoomTeleNormal:
+                return "?mode=camcmd&value=tele-fast";
+            case ZoomStop:
+                return "?mode=camcmd&value=zoomstop";
             default:
                 return "";
         }
@@ -94,7 +117,6 @@ public class CameraConnection extends AsyncTask<CameraConnection.Command, Intege
             String args = arguments(commands[i]);
             String url = "http://" + this.ipAddress + "/cam.cgi" + args;
 
-            //ToDo: Refactor HttpClient as AsyncTask, add UDP server (DatagramSocket).
             HttpClient httpclient = new DefaultHttpClient();
             HttpResponse response = null;
             try {
