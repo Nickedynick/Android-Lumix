@@ -19,5 +19,7 @@
     <string name="sharedPrefCameraPSK">sharedPrefCameraPSK</string>
     <string name="cameraIP">192.168.54.1</string>
     <string name="sharedPrefCameraIP">sharedPrefCameraIP</string>
+    <string name="DebugTag">Lumix</string>
+    <string name="cameraPort">49199</string>
 
 </resources>

@@ -219,32 +219,23 @@ public class MainActivity extends Activity
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_live, container, false);
 
-            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-
-            String ipAddress = sharedPref.getString(getString(R.string.sharedPrefCameraIP), getString(R.string.cameraIP));
-            String args = "";
-            String url = "http://" + ipAddress + "/cam.cgi" + args;
-
-            //ToDo: Refactor HttpClient as AsyncTask, add UDP server (DatagramSocket).
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpResponse response = null;
-            try {
-                response = httpclient.execute(new HttpGet(url));
-                StatusLine statusLine = response.getStatusLine();
-                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    response.getEntity().writeTo(out);
-                    out.close();
-                    String responseString = out.toString();
-                    Log.v("Lumix", responseString);
-                } else{
-                    //Closes the connection.
-                    response.getEntity().getContent().close();
-                    throw new IOException(statusLine.getReasonPhrase());
+            Button bStartServer = (Button) rootView.findViewById(R.id.buttonStartServer);
+            bStartServer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CameraConnection cc = new CameraConnection(getActivity());
+                    cc.execute(CameraConnection.Command.StartServer);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            });
+
+            Button bStopServer = (Button) rootView.findViewById(R.id.buttonStopServer);
+            bStopServer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CameraConnection cc = new CameraConnection(getActivity());
+                    cc.execute(CameraConnection.Command.StopServer);
+                }
+            });
 
             return rootView;
         }
@@ -328,7 +319,7 @@ public class MainActivity extends Activity
 
         public void connectToCamera(View view)
         {
-            Log.v("Lumix", "Connecting...");
+            Log.d(getString(R.string.DebugTag), "Connecting...");
             WifiManager wifiManager = (WifiManager)view.getContext().getSystemService(Context.WIFI_SERVICE);
 
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
@@ -353,18 +344,18 @@ public class MainActivity extends Activity
 
             Boolean scanned = wifiManager.startScan();
 
-            Log.v("Lumix", "Last Scan Results:");
+            Log.d(getString(R.string.DebugTag), "Last Scan Results:");
             for (ScanResult sr : wifiManager.getScanResults())
             {
-                Log.v("Lumix", "SSID: " + sr.SSID + "\r\n   Capabilities" + sr.capabilities);
+                Log.d(getString(R.string.DebugTag), "SSID: " + sr.SSID + "\r\n   Capabilities" + sr.capabilities);
 
                 if (sr.SSID.equals(cameraSSID))
                 {
-                    Log.v("Lumix", "Network found: " + sr.SSID);
+                    Log.d(getString(R.string.DebugTag), "Network found: " + sr.SSID);
                 }
             }
 
-            Log.v("Lumix", "Configured APs:");
+            Log.d(getString(R.string.DebugTag), "Configured APs:");
             WifiConfiguration wc;
             int netId = 0;
 
@@ -372,7 +363,7 @@ public class MainActivity extends Activity
 
             for (WifiConfiguration wcPre : wifiManager.getConfiguredNetworks())
             {
-                Log.v("Lumix", wcPre.SSID + " >> " + cameraSSID);
+                Log.d(getString(R.string.DebugTag), wcPre.SSID + " >> " + cameraSSID);
 
                 if (wcPre.SSID.equals(cameraSSID))
                 {
