@@ -236,7 +236,7 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(View view) {
                     CameraConnection cc = new CameraConnection(getActivity());
-                    cc.execute(CameraConnection.Command.Capture);
+                    cc.execute(CameraConnection.Command.StopServer);
                 }
             });
 
