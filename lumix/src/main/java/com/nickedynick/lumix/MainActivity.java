@@ -32,6 +32,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.net.URL;
 
 public class MainActivity extends Activity
@@ -226,6 +228,9 @@ public class MainActivity extends Activity
             bStartServer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+
+
                     CameraConnection cc = new CameraConnection(getActivity());
                     cc.execute(CameraConnection.Command.Viewer, CameraConnection.Command.StartServer);
                 }
@@ -237,6 +242,15 @@ public class MainActivity extends Activity
                 public void onClick(View view) {
                     CameraConnection cc = new CameraConnection(getActivity());
                     cc.execute(CameraConnection.Command.StopServer);
+                }
+            });
+
+            Button bCapture = (Button) rootView.findViewById(R.id.buttonCapture);
+            bCapture.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CameraConnection cc = new CameraConnection(getActivity());
+                    cc.execute(CameraConnection.Command.Capture);
                 }
             });
 

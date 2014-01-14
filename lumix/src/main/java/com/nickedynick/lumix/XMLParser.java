@@ -23,7 +23,7 @@ public class XMLParser {
     private String tagLink = "title";
 
     //ToDo: Wireshark the shit out of my camera.
-    //ToDo: Develop XML parser to account for possible returned tags.
+    //ToDo: Develop XML parser to account for all possible returned tags.
     public List parse(InputStream in) throws XmlPullParserException, IOException {
         try {
             XmlPullParser parser = Xml.newPullParser();

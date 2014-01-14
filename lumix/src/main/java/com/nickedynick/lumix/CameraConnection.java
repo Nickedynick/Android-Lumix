@@ -194,112 +194,108 @@ public class CameraConnection extends AsyncTask<CameraConnection.Command, Intege
         public MenuItem QualityFine;
         public MenuItem QualityStandard;
 
-        /*
-        <item id="menu_item_id_afmode" enable="yes" value="aftracking" />
-        <item id="menu_item_id_afmode_facedetection" enable="yes" />
-        <item id="menu_item_id_afmode_aftracking" enable="yes" />
-        <item id="menu_item_id_afmode_23area" enable="yes" />
-        <item id="menu_item_id_afmode_spot" enable="yes" />
-        <item id="menu_item_id_afmode_1area" enable="yes" />
-        <item id="menu_item_id_afmode_pinpoint" enable="no" />
+        public MenuItem AFMode;
+        public MenuItem AFMode_FaceDetection;
+        public MenuItem AFMode_AFTracking;
+        public MenuItem AFMode_23Area;
+        public MenuItem AFMode_Spot;
+        public MenuItem AFMode_1Area;
+        public MenuItem AFMode_PinPoint;
 
-        <item id="menu_item_id_lightmet" enable="yes" value="multi" />
-        <item id="menu_item_id_lightmet_multi" enable="yes" />
-        <item id="menu_item_id_lightmet_center" enable="yes" />
-        <item id="menu_item_id_lightmet_spot" enable="yes" />
+        public MenuItem LightMetering;
+        public MenuItem LightMetering_Multi;
+        public MenuItem LightMetering_Centre;
+        public MenuItem LightMetering_Spot;
 
-        <item id="menu_item_id_burst" enable="yes" value="off" />
-        <item id="menu_item_id_burst_auto" enable="no" />
-        <item id="menu_item_id_burst_af_cont_2" enable="yes" />
-        <item id="menu_item_id_burst_af_cont_5" enable="yes" />
-        <item id="menu_item_id_burst_af_sgl_10" enable="yes" />
-        <item id="menu_item_id_burst_af_sgl_40" enable="yes" />
-        <item id="menu_item_id_burst_af_sgl_60" enable="yes" />
-        <item id="menu_item_id_burst_flash" enable="no" />
-        <item id="menu_item_id_burst_off" enable="yes" />
+        public MenuItem Burst;
+        public MenuItem Burst_Auto;
+        public MenuItem Burst_AF_Cont_2;
+        public MenuItem Burst_AF_Cont_5;
+        public MenuItem Burst_AF_Single_10;
+        public MenuItem Burst_AF_Single_40;
+        public MenuItem Burst_AF_Single_60;
+        public MenuItem Burst_Flash;
+        public MenuItem Burst_Off;
 
-        <item id="menu_item_id_color_mode" enable="yes" value="standard" />
-        <item id="menu_item_id_color_mode_standard" enable="yes" />
-        <item id="menu_item_id_color_mode_vivid" enable="yes" />
-        <item id="menu_item_id_color_mode_bw" enable="yes" />
-        <item id="menu_item_id_color_mode_sepia" enable="yes" />
-        <item id="menu_item_id_color_mode_happy" enable="no" />
+        public MenuItem ColourMode;
+        public MenuItem ColourMode_Standard;
+        public MenuItem ColourMode_Vivid;
+        public MenuItem ColourMode_BV;
+        public MenuItem ColourMode_Sepia;
+        public MenuItem ColourMode_Happy;
 
-        <item id="menu_item_id_videoformat" enable="no" />
-        <item id="menu_item_id_videoformat_avchd" enable="no" />
-        <item id="menu_item_id_videoformat_mp4" enable="no" />
+        public MenuItem VideoFormat;
+        public MenuItem VideoFormat_AVCHD;
+        public MenuItem VideoFormat_MP4;
 
-        <item id="menu_item_id_v_quality" enable="yes" value="mp4_30p_20mbps" />
-        <item id="menu_item_id_v_quality_avchd_60p_28mbps_gps" enable="no" />
-        <item id="menu_item_id_v_quality_avchd_60p_28mbps" enable="no" />
-        <item id="menu_item_id_v_quality_avchd_60i_17mbps_gps" enable="no" />
-        <item id="menu_item_id_v_quality_avchd_60i_17mbps" enable="no" />
-        <item id="menu_item_id_v_quality_avchd_60p_17mbps_gps" enable="no" />
-        <item id="menu_item_id_v_quality_avchd_60p_17mbps" enable="no" />
-        <item id="menu_item_id_v_quality_avchd_50p_28mbps_gps" enable="no" />
-        <item id="menu_item_id_v_quality_avchd_50p_28mbps" enable="no" />
-        <item id="menu_item_id_v_quality_avchd_50i_17mbps_gps" enable="yes" />
-        <item id="menu_item_id_v_quality_avchd_50i_17mbps" enable="yes" />
-        <item id="menu_item_id_v_quality_avchd_50p_17mbps_gps" enable="yes" />
-        <item id="menu_item_id_v_quality_avchd_50p_17mbps" enable="yes" />
-        <item id="menu_item_id_v_quality_avchd_30p_24mbps" enable="no" />
-        <item id="menu_item_id_v_quality_avchd_24p_24mbps" enable="no" />
-        <item id="menu_item_id_v_quality_mp4_30p_20mbps" enable="no" />
-        <item id="menu_item_id_v_quality_mp4_30p_10mbps" enable="no" />
-        <item id="menu_item_id_v_quality_mp4_30p_4mbps" enable="no" />
-        <item id="menu_item_id_v_quality_mp4_25p_20mbps" enable="yes" />
-        <item id="menu_item_id_v_quality_mp4_25p_10mbps" enable="yes" />
-        <item id="menu_item_id_v_quality_mp4_25p_4mbps" enable="yes" />
+        public MenuItem VideoQuality;
+        public MenuItem VideoQuality_avchd_60p_28mbps_gps;
+        public MenuItem VideoQuality_avchd_60p_28mbps;
+        public MenuItem VideoQuality_avchd_60i_17mbps_gps;
+        public MenuItem VideoQuality_avchd_60i_17mbps;
+        public MenuItem VideoQuality_avchd_60p_17mbps_gps;
+        public MenuItem VideoQuality_avchd_60p_17mbps;
+        public MenuItem VideoQuality_avchd_50p_28mbps_gps;
+        public MenuItem VideoQuality_avchd_50p_28mbps;
+        public MenuItem VideoQuality_avchd_50i_17mbps_gps;
+        public MenuItem VideoQuality_avchd_50i_17mbps;
+        public MenuItem VideoQuality_avchd_50p_17mbps_gps;
+        public MenuItem VideoQuality_avchd_50p_17mbps;
+        public MenuItem VideoQuality_avchd_30p_24mbps;
+        public MenuItem VideoQuality_avchd_24p_24mbps;
+        public MenuItem VideoQuality_mp4_30p_20mbps;
+        public MenuItem VideoQuality_mp4_30p_10mbps;
+        public MenuItem VideoQuality_mp4_30p_4mbps;
+        public MenuItem VideoQuality_mp4_25p_20mbps;
+        public MenuItem VideoQuality_mp4_25p_10mbps;
+        public MenuItem VideoQuality_mp4_25p_4mbps;
 
-        <item id="menu_item_id_liveview_quality" enable="yes" value="vga" />
-        <item id="menu_item_id_liveviewsize_vga" enable="yes" />
-        <item id="menu_item_id_liveviewsize_qvga" enable="yes" />
-        */
+        public MenuItem LiveView_Quality;
+        public MenuItem LiveView_VGA;
+        public MenuItem LiveView_QVGA;
     }
 
     public class QMenu
     {
-        /*
-        <item id="menu_item_id_f_and_ss2" enable="yes" />
+        public MenuItem F_SS2;
 
-        <item id="menu_item_id_shutter_speed2" enable="no" />
+        public MenuItem Shutter_Speed2;
 
-        <item id="menu_item_id_aperture2" enable="no" />
+        public MenuItem Aperture2;
 
-        <item id="menu_item_id_exposure2" enable="no" />
+        public MenuItem Exposure2;
 
-        <item id="menu_item_id_exposure_m5" enable="no" />
-        <item id="menu_item_id_exposure_m14_3" enable="no" />
-        <item id="menu_item_id_exposure_m13_3" enable="no" />
-        <item id="menu_item_id_exposure_m4" enable="no" />
-        <item id="menu_item_id_exposure_m11_3" enable="no" />
-        <item id="menu_item_id_exposure_m10_3" enable="no" />
-        <item id="menu_item_id_exposure_m3" enable="no" />
-        <item id="menu_item_id_exposure_m8_3" enable="no" />
-        <item id="menu_item_id_exposure_m7_3" enable="no" />
-        <item id="menu_item_id_exposure_m2" enable="no" />
-        <item id="menu_item_id_exposure_m5_3" enable="no" />
-        <item id="menu_item_id_exposure_m4_3" enable="no" />
-        <item id="menu_item_id_exposure_m1" enable="no" />
-        <item id="menu_item_id_exposure_m2_3" enable="no" />
-        <item id="menu_item_id_exposure_m1_3" enable="no" />
-        <item id="menu_item_id_exposure_0" enable="yes" />
-        <item id="menu_item_id_exposure_p1_3" enable="no" />
-        <item id="menu_item_id_exposure_p2_3" enable="no" />
-        <item id="menu_item_id_exposure_p1" enable="no" />
-        <item id="menu_item_id_exposure_p4_3" enable="no" />
-        <item id="menu_item_id_exposure_p5_3" enable="no" />
-        <item id="menu_item_id_exposure_p2" enable="no" />
-        <item id="menu_item_id_exposure_p7_3" enable="no" />
-        <item id="menu_item_id_exposure_p8_3" enable="no" />
-        <item id="menu_item_id_exposure_p3" enable="no" />
-        <item id="menu_item_id_exposure_p10_3" enable="no" />
-        <item id="menu_item_id_exposure_p11_3" enable="no" />
-        <item id="menu_item_id_exposure_p12_3" enable="no" />
-        <item id="menu_item_id_exposure_p13_3" enable="no" />
-        <item id="menu_item_id_exposure_p14_3" enable="no" />
-        <item id="menu_item_id_exposure_p15_3" enable="no" />
-         */
+        public MenuItem Exposure_m5;
+        public MenuItem Exposure_m14_3;
+        public MenuItem Exposure_m13_3;
+        public MenuItem Exposure_m4;
+        public MenuItem Exposure_m11_3;
+        public MenuItem Exposure_m10_3;
+        public MenuItem Exposure_m3;
+        public MenuItem Exposure_m8_3;
+        public MenuItem Exposure_m7_3;
+        public MenuItem Exposure_m2;
+        public MenuItem Exposure_m5_3;
+        public MenuItem Exposure_m4_3;
+        public MenuItem Exposure_m1;
+        public MenuItem Exposure_m2_3;
+        public MenuItem Exposure_m1_3;
+        public MenuItem Exposure_0;
+        public MenuItem Exposure_p1_3;
+        public MenuItem Exposure_p2_3;
+        public MenuItem Exposure_p1;
+        public MenuItem Exposure_p4_3;
+        public MenuItem Exposure_p5_3;
+        public MenuItem Exposure_p2;
+        public MenuItem Exposure_p7_3;
+        public MenuItem Exposure_p8_3;
+        public MenuItem Exposure_p3;
+        public MenuItem Exposure_p10_3;
+        public MenuItem Exposure_p11_3;
+        public MenuItem Exposure_p4;
+        public MenuItem Exposure_p13_3;
+        public MenuItem Exposure_p14_3;
+        public MenuItem Exposure_p5;
     }
 
     public class MenuItem
@@ -322,8 +318,6 @@ public class CameraConnection extends AsyncTask<CameraConnection.Command, Intege
     {
         switch (command)
         {
-            //ToDo: Develop code for UDP server (DatagramSocket) to get live feed.
-            //ToDo: MJPEG. What is it, and how do I show a stream of it?
             case GetState:
                 return "?mode=getstate";
             case StartServer:
@@ -394,6 +388,7 @@ public class CameraConnection extends AsyncTask<CameraConnection.Command, Intege
                     {
                         processXML(responseString);
                     }
+
                 } else{
                     //Closes the connection.
                     response.getEntity().getContent().close();
