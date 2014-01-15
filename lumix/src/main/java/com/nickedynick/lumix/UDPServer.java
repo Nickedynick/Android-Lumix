@@ -45,8 +45,7 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
 
             DatagramPacket packet;
 
-            //while (!kill)
-            for (int n =0; n < 50; n++)
+            while (!kill)
             {
                 packet = new DatagramPacket(inBuffer, inBuffer.length);
 
@@ -66,8 +65,7 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
 
                 bmp = BitmapFactory.decodeByteArray(newBuffer, 0, newBuffer.length);
 
-                //ImageView imageView = (ImageView)activity.findViewById(R.id.imageView);
-                //imageView.setImageBitmap(bmp);
+                publishProgress();
 
                 Log.d(activity.getString(R.string.DebugTag), "Image set!");
             }
@@ -90,11 +88,14 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
     }
 
     protected void onProgressUpdate(Integer... progress) {
-        Log.d(activity.getString(R.string.DebugTag), progress[0].toString());
+        //Log.d(activity.getString(R.string.DebugTag), progress[0].toString());
+
+        ImageView imageView = (ImageView)activity.findViewById(R.id.imageView);
+        imageView.setImageBitmap(bmp);
     }
 
     protected void onPostExecute(Long result) {
-        Log.d(activity.getString(R.string.DebugTag), "Did a things...");
+        Log.d(activity.getString(R.string.DebugTag), "UDP server finished...");
 
         ImageView imageView = (ImageView)activity.findViewById(R.id.imageView);
         imageView.setImageBitmap(bmp);
