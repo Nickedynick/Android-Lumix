@@ -1,19 +1,29 @@
 package com.nickedynick.lumix;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 //ToDo: Develop code for UDP server (DatagramSocket) to get live feed.
 //ToDo: MJPEG. What is it, and how do I show a stream of it?
 public class UDPServer extends AsyncTask<Integer, Integer, Long> {
 
     private Activity activity;
+
+    DatagramSocket socket;
+
+    Bitmap bmp = null;
+
+    Boolean kill = false;
 
     public UDPServer(Activity activity)
     {
@@ -24,13 +34,37 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
     protected Long doInBackground(Integer... integers) {
         try {
 
-            byte[] message = new byte[1500];
+            socket = new DatagramSocket(Integer.parseInt(activity.getString(R.string.cameraPort)));
 
-            DatagramPacket packet = new DatagramPacket(message, message.length);
-            DatagramSocket socket = new DatagramSocket(Integer.parseInt(activity.getString(R.string.cameraPort)));
-            socket.receive(packet);
+            byte[] outBuffer;
+            byte[] inBuffer = new byte[30000];
 
-            String sentMessage = new String(message, 0, packet.getLength());
+            int offset=132;
+
+            DatagramPacket packet;
+
+            while (!kill)
+            {
+                packet = new DatagramPacket(inBuffer, inBuffer.length);
+
+                socket.receive(packet);
+
+                outBuffer = packet.getData();
+
+                for (int i = 130; i < 320; i += 1)
+                {
+                    if (outBuffer[i]==-1 && outBuffer[i+1]==-40)
+                    {
+                        offset = i;
+                    }
+                }
+
+                byte[] newBuffer = Arrays.copyOfRange(outBuffer, offset, packet.getLength());
+
+                bmp = BitmapFactory.decodeByteArray(newBuffer, 0, newBuffer.length);
+            }
+
+            socket.close();
 
         } catch (SocketException e) {
             e.printStackTrace();
@@ -39,6 +73,12 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
         }
 
         return null;
+    }
+
+    @Override
+    protected void onCancelled()
+    {
+        kill = true;
     }
 
     protected void onProgressUpdate(Integer... progress) {

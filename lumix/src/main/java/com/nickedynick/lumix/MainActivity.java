@@ -216,6 +216,8 @@ public class MainActivity extends Activity
             return fragment;
         }
 
+        private UDPServer server;
+
         public LiveFragment() {
         }
 
@@ -229,7 +231,8 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(View view) {
 
-
+                    server = new UDPServer(getActivity());
+                    server.doInBackground(1);
 
                     CameraConnection cc = new CameraConnection(getActivity());
                     cc.execute(CameraConnection.Command.Viewer, CameraConnection.Command.StartServer);
@@ -242,6 +245,8 @@ public class MainActivity extends Activity
                 public void onClick(View view) {
                     CameraConnection cc = new CameraConnection(getActivity());
                     cc.execute(CameraConnection.Command.StopServer);
+
+                    server.cancel(true);
                 }
             });
 
