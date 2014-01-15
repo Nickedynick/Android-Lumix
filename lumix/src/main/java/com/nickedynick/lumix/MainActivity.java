@@ -231,11 +231,15 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(View view) {
 
-                    server = new UDPServer(getActivity());
-                    server.doInBackground(1);
+                    Log.d(getString(R.string.DebugTag), "Sending connection command to camera...");
 
                     CameraConnection cc = new CameraConnection(getActivity());
                     cc.execute(CameraConnection.Command.Viewer, CameraConnection.Command.StartServer);
+
+                    /*Log.d(getString(R.string.DebugTag), "Starting UDP server...");
+
+                    server = new UDPServer(getActivity());
+                    server.execute();*/
                 }
             });
 
@@ -246,7 +250,7 @@ public class MainActivity extends Activity
                     CameraConnection cc = new CameraConnection(getActivity());
                     cc.execute(CameraConnection.Command.StopServer);
 
-                    server.cancel(true);
+                    if (server != null) server.cancel(true);
                 }
             });
 
@@ -256,6 +260,20 @@ public class MainActivity extends Activity
                 public void onClick(View view) {
                     CameraConnection cc = new CameraConnection(getActivity());
                     cc.execute(CameraConnection.Command.Capture);
+                }
+            });
+
+            Button bStartStream = (Button) rootView.findViewById(R.id.buttonStream);
+            bStartStream.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CameraConnection cc = new CameraConnection(getActivity());
+                    cc.execute(CameraConnection.Command.Viewer);
+
+                    Log.d(getString(R.string.DebugTag), "Starting UDP server...");
+
+                    server = new UDPServer(getActivity());
+                    server.execute();
                 }
             });
 
@@ -366,18 +384,18 @@ public class MainActivity extends Activity
 
             Boolean scanned = wifiManager.startScan();
 
-            Log.d(getString(R.string.DebugTag), "Last Scan Results:");
+            //Log.d(getString(R.string.DebugTag), "Last Scan Results:");
             for (ScanResult sr : wifiManager.getScanResults())
             {
-                Log.d(getString(R.string.DebugTag), "SSID: " + sr.SSID + "\r\n   Capabilities" + sr.capabilities);
+                //Log.d(getString(R.string.DebugTag), "SSID: " + sr.SSID + "\r\n   Capabilities" + sr.capabilities);
 
                 if (sr.SSID.equals(cameraSSID))
                 {
-                    Log.d(getString(R.string.DebugTag), "Network found: " + sr.SSID);
+                    //Log.d(getString(R.string.DebugTag), "Network found: " + sr.SSID);
                 }
             }
 
-            Log.d(getString(R.string.DebugTag), "Configured APs:");
+            //Log.d(getString(R.string.DebugTag), "Configured APs:");
             WifiConfiguration wc;
             int netId = 0;
 
@@ -385,7 +403,7 @@ public class MainActivity extends Activity
 
             for (WifiConfiguration wcPre : wifiManager.getConfiguredNetworks())
             {
-                Log.d(getString(R.string.DebugTag), wcPre.SSID + " >> " + cameraSSID);
+                //Log.d(getString(R.string.DebugTag), wcPre.SSID + " >> " + cameraSSID);
 
                 if (wcPre.SSID.equals(cameraSSID))
                 {
@@ -407,6 +425,8 @@ public class MainActivity extends Activity
             wifiManager.disconnect();
             wifiManager.enableNetwork(netId, true);
             wifiManager.setWifiEnabled(true);
+
+            Log.d(getString(R.string.DebugTag), "Connected!");
         }
 
         public void reconnectToWifi(View view)

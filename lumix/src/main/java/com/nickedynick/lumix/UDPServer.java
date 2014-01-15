@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
     @Override
     protected Long doInBackground(Integer... integers) {
         try {
+            Log.d(activity.getString(R.string.DebugTag), "Creating socket...");
 
             socket = new DatagramSocket(Integer.parseInt(activity.getString(R.string.cameraPort)));
 
@@ -43,7 +45,8 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
 
             DatagramPacket packet;
 
-            while (!kill)
+            //while (!kill)
+            for (int n =0; n < 50; n++)
             {
                 packet = new DatagramPacket(inBuffer, inBuffer.length);
 
@@ -62,6 +65,11 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
                 byte[] newBuffer = Arrays.copyOfRange(outBuffer, offset, packet.getLength());
 
                 bmp = BitmapFactory.decodeByteArray(newBuffer, 0, newBuffer.length);
+
+                //ImageView imageView = (ImageView)activity.findViewById(R.id.imageView);
+                //imageView.setImageBitmap(bmp);
+
+                Log.d(activity.getString(R.string.DebugTag), "Image set!");
             }
 
             socket.close();
@@ -86,6 +94,9 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
     }
 
     protected void onPostExecute(Long result) {
-        //Log.d(activity.getString(R.string.DebugTag), "Downloaded " + result + " bytes");
+        Log.d(activity.getString(R.string.DebugTag), "Did a things...");
+
+        ImageView imageView = (ImageView)activity.findViewById(R.id.imageView);
+        imageView.setImageBitmap(bmp);
     }
 }
