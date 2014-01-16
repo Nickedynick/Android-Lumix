@@ -33,6 +33,15 @@
         android:layout_below="@+id/buttonStartServer"
         android:layout_toRightOf="@+id/buttonStream" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Stream"
+        android:id="@+id/buttonStream"
+        android:layout_below="@+id/buttonStartServer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,12 +52,4 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Stream"
-        android:id="@+id/buttonStream"
-        android:layout_below="@+id/buttonStartServer"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 </RelativeLayout>

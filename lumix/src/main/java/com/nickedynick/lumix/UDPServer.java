@@ -3,8 +3,10 @@ package com.nickedynick.lumix;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.widget.ImageView;
 
 import java.io.ByteArrayInputStream;
@@ -31,6 +33,8 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
         this.activity = activity;
     }
 
+    // ToDo: Check this out: http://stackoverflow.com/questions/3205191/android-and-mjpeg
+
     @Override
     protected Long doInBackground(Integer... integers) {
         try {
@@ -45,29 +49,41 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
 
             DatagramPacket packet;
 
+            int n = 0;
+
             while (!kill)
             {
-                packet = new DatagramPacket(inBuffer, inBuffer.length);
+                try {
+                    packet = new DatagramPacket(inBuffer, inBuffer.length);
 
-                socket.receive(packet);
+                    socket.receive(packet);
 
-                outBuffer = packet.getData();
+                    outBuffer = packet.getData();
 
-                for (int i = 130; i < 320; i += 1)
-                {
-                    if (outBuffer[i]==-1 && outBuffer[i+1]==-40)
+                    for (int i = 130; i < 320; i += 1)
                     {
-                        offset = i;
+                        if (outBuffer[i]==-1 && outBuffer[i+1]==-40)
+                        {
+                            offset = i;
+                        }
                     }
+
+                    /*byte[] newBuffer = Arrays.copyOfRange(outBuffer, offset, packet.getLength());
+                    bmp = BitmapFactory.decodeByteArray(newBuffer, 0, newBuffer.length);*/
+
+                    bmp = BitmapFactory.decodeByteArray(outBuffer, offset, packet.getLength());
+                }
+                catch (Exception except){
+                    Log.e(activity.getString(R.string.DebugTag), except.getMessage());
                 }
 
-                byte[] newBuffer = Arrays.copyOfRange(outBuffer, offset, packet.getLength());
-
-                bmp = BitmapFactory.decodeByteArray(newBuffer, 0, newBuffer.length);
-
                 publishProgress();
+                n++;
 
-                Log.d(activity.getString(R.string.DebugTag), "Image set!");
+                // ToDo: Stream freezes after a certain amount of time. M\y be a memory leak.
+                Log.d(activity.getString(R.string.DebugTag), "Image " + String.valueOf(n) + " set!");
+
+                //Thread.sleep(100);
             }
 
             socket.close();
@@ -91,7 +107,19 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
         //Log.d(activity.getString(R.string.DebugTag), progress[0].toString());
 
         ImageView imageView = (ImageView)activity.findViewById(R.id.imageView);
+        //stripImageView(imageView);
         imageView.setImageBitmap(bmp);
+        imageView.invalidate();
+    }
+
+    public static void stripImageView(ImageView view) {
+        if ( view.getDrawable() instanceof BitmapDrawable ) {
+            ((BitmapDrawable)view.getDrawable()).getBitmap().recycle();
+        }
+        view.getDrawable().setCallback(null);
+        view.setImageDrawable(null);
+        view.getResources().flushLayoutCache();
+        view.destroyDrawingCache();
     }
 
     protected void onPostExecute(Long result) {

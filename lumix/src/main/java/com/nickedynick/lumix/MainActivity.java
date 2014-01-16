@@ -74,13 +74,13 @@ public class MainActivity extends Activity
         {
             case 0:
             default:
-                fragment = GalleryFragment.newInstance(position + 1);
+                fragment = ConnectionFragment.newInstance(position + 1);
                 break;
             case 1:
                 fragment = LiveFragment.newInstance(position + 1);
                 break;
             case 2:
-                fragment = ConnectionFragment.newInstance(position + 1);
+                fragment = GalleryFragment.newInstance(position + 1);
                 break;
         }
 
@@ -320,8 +320,8 @@ public class MainActivity extends Activity
 
             SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 
-            String cameraSSID = sharedPref.getString(getString(R.string.sharedPrefCameraSSID), "\"" + getString(R.string.cameraSSID) + "\"");
-            String cameraPSK = sharedPref.getString(getString(R.string.sharedPrefCameraPSK), "\"" + getString(R.string.cameraPSK) + "\"");
+            String cameraSSID = sharedPref.getString(getString(R.string.sharedPrefCameraSSID), getString(R.string.cameraSSID));
+            String cameraPSK = sharedPref.getString(getString(R.string.sharedPrefCameraPSK), getString(R.string.cameraPSK));
 
             EditText editTextSSID = (EditText) rootView.findViewById(R.id.editTextSSID);
             editTextSSID.setText(cameraSSID);
@@ -357,6 +357,7 @@ public class MainActivity extends Activity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
 
+        // ToDo: Connect / disconnect on ASyncTask.
         public void connectToCamera(View view)
         {
             Log.d(getString(R.string.DebugTag), "Connecting...");
@@ -381,6 +382,9 @@ public class MainActivity extends Activity
             editor.putString(getString(R.string.sharedPrefCameraPSK), cameraPSK);
 
             editor.commit();
+
+            cameraSSID = "\"" + cameraSSID + "\"";
+            cameraPSK = "\"" + cameraPSK + "\"";
 
             Boolean scanned = wifiManager.startScan();
 
@@ -426,7 +430,24 @@ public class MainActivity extends Activity
             wifiManager.enableNetwork(netId, true);
             wifiManager.setWifiEnabled(true);
 
-            Log.d(getString(R.string.DebugTag), "Connected!");
+            long start = System.currentTimeMillis();
+            long waitTime = 10000;
+
+            long currentWait = System.currentTimeMillis() - start;
+
+            while (currentWait < waitTime)
+            {
+                wifiInfo = wifiManager.getConnectionInfo();
+
+                if (wifiInfo.getSSID().equals(cameraSSID))
+                {
+                    Log.d(getString(R.string.DebugTag), "Connected to " + cameraSSID + "!");
+                    return;
+                }
+                currentWait = System.currentTimeMillis() - start;
+            }
+
+            Log.d(getString(R.string.DebugTag), "Not connected to " + cameraSSID + " after " + String.valueOf(waitTime / 1000) + " seconds.");
         }
 
         public void reconnectToWifi(View view)
@@ -447,6 +468,8 @@ public class MainActivity extends Activity
                         wifiManager.disconnect();
                         wifiManager.enableNetwork(netId, true);
                         wifiManager.setWifiEnabled(true);
+
+                        Log.d(getString(R.string.DebugTag), "Disconnected from " + getString(R.string.cameraSSID) + ".");
                     }
                 }
             }
