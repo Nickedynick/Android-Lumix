@@ -104,22 +104,9 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
     }
 
     protected void onProgressUpdate(Integer... progress) {
-        //Log.d(activity.getString(R.string.DebugTag), progress[0].toString());
-
         ImageView imageView = (ImageView)activity.findViewById(R.id.imageView);
-        //stripImageView(imageView);
         imageView.setImageBitmap(bmp);
         imageView.invalidate();
-    }
-
-    public static void stripImageView(ImageView view) {
-        if ( view.getDrawable() instanceof BitmapDrawable ) {
-            ((BitmapDrawable)view.getDrawable()).getBitmap().recycle();
-        }
-        view.getDrawable().setCallback(null);
-        view.setImageDrawable(null);
-        view.getResources().flushLayoutCache();
-        view.destroyDrawingCache();
     }
 
     protected void onPostExecute(Long result) {
