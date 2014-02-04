@@ -3,21 +3,18 @@ package com.nickedynick.lumix;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.SurfaceView;
 import android.widget.ImageView;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Arrays;
+import java.util.Enumeration;
 
 //ToDo: Develop code for UDP server (DatagramSocket) to get live feed.
-//ToDo: MJPEG. What is it, and how do I show a stream of it?
 public class UDPServer extends AsyncTask<Integer, Integer, Long> {
 
     private Activity activity;
@@ -28,9 +25,39 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
 
     Boolean kill = false;
 
+    int port;
+    private InetAddress myIP;
+
     public UDPServer(Activity activity)
     {
         this.activity = activity;
+
+        Log.d(activity.getString(R.string.DebugTag), "Creating socket...");
+
+        try {
+            this.myIP = getLocalIpAddress();
+            this.port = Integer.parseInt(activity.getString(R.string.cameraPort));
+            this.socket = new DatagramSocket(port);
+        } catch (SocketException e) {
+            Log.e(activity.getString(R.string.DebugTag), e.getStackTrace().toString());
+        }
+    }
+
+    public InetAddress getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        return inetAddress;
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            Log.e(activity.getString(R.string.DebugTag), ex.toString());
+        }
+        return null;
     }
 
     // ToDo: Check this out: http://stackoverflow.com/questions/3205191/android-and-mjpeg
@@ -38,10 +65,6 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
     @Override
     protected Long doInBackground(Integer... integers) {
         try {
-            Log.d(activity.getString(R.string.DebugTag), "Creating socket...");
-
-            socket = new DatagramSocket(Integer.parseInt(activity.getString(R.string.cameraPort)));
-
             byte[] outBuffer;
             byte[] inBuffer = new byte[30000];
 
@@ -54,8 +77,9 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
             while (!kill)
             {
                 try {
-                    packet = new DatagramPacket(inBuffer, inBuffer.length);
+                    packet = new DatagramPacket(inBuffer, inBuffer.length, myIP, port);
 
+                    // ToDo: I think my socket sometimes stops receiving packets.
                     socket.receive(packet);
 
                     outBuffer = packet.getData();
@@ -68,29 +92,28 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
                         }
                     }
 
-                    /*byte[] newBuffer = Arrays.copyOfRange(outBuffer, offset, packet.getLength());
-                    bmp = BitmapFactory.decodeByteArray(newBuffer, 0, newBuffer.length);*/
+//                    byte[] newBuffer = Arrays.copyOfRange(outBuffer, offset, packet.getLength());
+//                    bmp = BitmapFactory.decodeStream( new ByteArrayInputStream(newBuffer));
 
+//                    MJpegInputStream mStream = new MJpegInputStream(new ByteArrayInputStream(outBuffer));
+//                    bmp = mStream.readMJpegFrame();
+
+                    // ToDo: java.lang.ArrayIndexOutOfBoundsException here occasionally. Probably sending incomplete data.
                     bmp = BitmapFactory.decodeByteArray(outBuffer, offset, packet.getLength());
+
+                    // ToDo: Stream freezes after a certain amount of time. May be a memory leak.
+                    publishProgress(n, offset);
+                    n++;
                 }
-                catch (Exception except){
-                    Log.e(activity.getString(R.string.DebugTag), except.getMessage());
+                catch (Exception e){
+                    bmp = null; // This seems to extend life a bit, but not enough.
+                    e.printStackTrace();
                 }
-
-                publishProgress();
-                n++;
-
-                // ToDo: Stream freezes after a certain amount of time. M\y be a memory leak.
-                Log.d(activity.getString(R.string.DebugTag), "Image " + String.valueOf(n) + " set!");
-
-                //Thread.sleep(100);
             }
 
             socket.close();
 
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -104,9 +127,18 @@ public class UDPServer extends AsyncTask<Integer, Integer, Long> {
     }
 
     protected void onProgressUpdate(Integer... progress) {
+
+        int n = progress[0];
+        int offset = progress[1];
+
+        Log.d(activity.getString(R.string.DebugTag), "Image " + String.valueOf(n) + ": " + String.valueOf(offset));
+
         ImageView imageView = (ImageView)activity.findViewById(R.id.imageView);
         imageView.setImageBitmap(bmp);
-        imageView.invalidate();
+
+        // ToDo: Investigate canvas approach properly.
+
+        Log.d(activity.getString(R.string.DebugTag), "Image " + String.valueOf(n) + " set!");
     }
 
     protected void onPostExecute(Long result) {

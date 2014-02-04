@@ -14,7 +14,7 @@ import org.apache.http.params.HttpParams;
 import java.io.IOException;
 import java.net.URI;
 
-public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
+public class DoRead extends AsyncTask<String, Void, MJpegInputStream> {
 
     Activity activity;
 
@@ -23,7 +23,7 @@ public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
         this.activity = activity;
     }
 
-    protected MjpegInputStream doInBackground(String... url) {
+    protected MJpegInputStream doInBackground(String... url) {
         //TODO: if camera has authentication deal with it and don't just not work
         HttpResponse res = null;
         DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -38,7 +38,7 @@ public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
                 //You must turn off camera User Access Control before this will work
                 return null;
             }
-            return new MjpegInputStream(res.getEntity().getContent());
+            return new MJpegInputStream(res.getEntity().getContent());
         } catch (ClientProtocolException e) {
             e.printStackTrace();
             Log.d(activity.getString(R.string.DebugTag), "Request failed-ClientProtocolException", e);
@@ -51,8 +51,8 @@ public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
         return null;
     }
 
-    protected void onPostExecute(MjpegInputStream result) {
-        MjpegView mv = (MjpegView) activity.findViewById(R.id.surfaceViewStream);
+    protected void onPostExecute(MJpegInputStream result) {
+        MJpegView mv = (MJpegView) activity.findViewById(R.id.surfaceViewStream);
         mv.setSource(result);
         if(result!=null){
             result.setSkip(1);
@@ -60,7 +60,7 @@ public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
         }else{
             //setTitle(R.string.title_disconnected);
         }
-        mv.setDisplayMode(MjpegView.SIZE_BEST_FIT);
+        mv.setDisplayMode(MJpegView.SIZE_BEST_FIT);
         mv.showFps(false);
     }
 }
